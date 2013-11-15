@@ -1,4 +1,4 @@
-/*global TabsView, console*/
+/*global TabsView*/
 
 
 var tabs = new TabsView();
@@ -14,14 +14,5 @@ tabs.addTab('six', 'Six', 'Six');
 tabs.removeTab('two');
 
 tabs.activeTab('three');
-
-
-var current = 0;
-var tabIds = [
-'four','five', 'six'
-];
-setInterval(function () {
-    tabs.activeTab(tabIds[current++ % tabIds.length]);
-}, 1000);
 
 tabs.render(document.body);

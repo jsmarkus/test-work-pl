@@ -27,6 +27,7 @@
         if (!this._isRendered()) {
             this._initLayout();
             this._applyAll();
+            this._bindEvents();
         }
 
         var asMain = this.assets.main;
@@ -99,7 +100,7 @@
         var node = domElement('div', {
             'class': 'tabs-pane'
         });
-        if(tab.content instanceof HTMLElement) {
+        if (tab.content instanceof HTMLElement) {
             node.appendChild(tab.content);
         } else {
             node.innerHTML = tab.content;
@@ -126,7 +127,7 @@
     };
 
     proto._applyAddTab = function(tab) {
-        if(!this._isRendered()) {
+        if (!this._isRendered()) {
             return;
         }
 
@@ -139,7 +140,7 @@
     };
 
     proto._applyRemoveTab = function(id) {
-        if(!this._isRendered()) {
+        if (!this._isRendered()) {
             return;
         }
 
@@ -150,7 +151,7 @@
     };
 
     proto._applyActiveTab = function(id, oldId) {
-        if(!this._isRendered()) {
+        if (!this._isRendered()) {
             return;
         }
 
@@ -180,6 +181,28 @@
             this._applyAddTab(tab);
         }
         this._applyActiveTab(this._activeTabId);
+    };
+
+    proto._bindEvents = function() {
+        //TODO: IE!
+        var self = this;
+        this.assets.titles.addEventListener('click',
+            function(event) {
+                return self._onTitleClick(event);
+            }
+        );
+    };
+
+    proto._onTitleClick = function() {
+        var target = event.target; //TODO: IE!
+        if (!target) {
+            return;
+        }
+        if (!target.hasAttribute('data-tab-id')) {
+            return;
+        }
+        var tabId = target.getAttribute('data-tab-id');
+        this.activeTab(tabId);
     };
 
     proto._getTitleElement = function(id) {

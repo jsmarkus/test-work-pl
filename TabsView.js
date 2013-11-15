@@ -189,11 +189,12 @@
         this.assets.titles.addEventListener('click',
             function(event) {
                 return self._onTitleClick(event);
-            }
+            },
+            false
         );
     };
 
-    proto._onTitleClick = function() {
+    proto._onTitleClick = function(event) {
         var target = event.target; //TODO: IE!
         if (!target) {
             return;

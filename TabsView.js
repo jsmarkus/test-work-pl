@@ -116,7 +116,7 @@
 
     proto._createTitlesContainer = function() {
         return domElement('ul', {
-            'class': 'tabs'
+            'class': 'tabs clearfix'
         });
     };
 

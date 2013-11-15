@@ -3,16 +3,15 @@
 
 var tabs = new TabsView();
 
+function byId(id) {
+	return document.getElementById(id);
+}
+tabs.addTab('one', 'One', byId('fixture-one'));
+tabs.addTab('two', 'Two', byId('fixture-two'));
+tabs.addTab('three', 'Three', byId('fixture-three'));
+tabs.addTab('four', 'Four', byId('fixture-four'));
 
-tabs.addTab('one', 'One', 'Lorem ipsum');
-tabs.addTab('two', 'Two', 'Hello world');
-tabs.addTab('three', 'Three', 'Foo bar');
-tabs.addTab('four', 'Four', 'Four');
-tabs.addTab('five', 'Five', 'Five');
-tabs.addTab('six', 'Six', 'Six');
 
-tabs.removeTab('two');
-
-tabs.activeTab('three');
+tabs.activeTab('one');
 
 tabs.render(document.body);

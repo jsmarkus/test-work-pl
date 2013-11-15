@@ -25,14 +25,29 @@
         var asPanes = assets.panes = this._createPanesContainer();
         asMain.appendChild(asTitles);
         asMain.appendChild(asPanes);
+        this._tabs = [];
+        this._tabsById = {};
     };
 
-    proto.addTab = function() {
-
+    proto.addTab = function(id, title, content) {
+        var tab = {
+            id: id,
+            title: title,
+            content: content
+        };
+        this._tabs.push(tab);
+        this._tabsById[id] = tab; //TODO: control unique id
+        this._applyAddTab(tab);
     };
 
-    proto.removeTab = function() {
-
+    proto.removeTab = function(id) {
+        var tab = this._tabsById[id];
+        //TODO: 404
+        var index = this._tabs.indexOf(tab);
+        //TODO: IE ployfill
+        this._tabs.splice(index, 1);
+        delete this._tabsById[id];
+        this._applyRemoveTab(index);
     };
 
     proto.activeTab = function() {
@@ -67,6 +82,14 @@
         return domElement('div', {
             'class': 'panes'
         });
+    };
+
+    proto._applyAddTab = function(tab) {
+
+    };
+
+    proto._applyRemoveTab = function(index) {
+
     };
 
     function domElement(tag, attrs) {

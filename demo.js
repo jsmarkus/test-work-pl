@@ -31,3 +31,19 @@ var tabs = new TabsView({
 
     activeTab: 'three'
 });
+
+var nestedTabs = new TabsView({
+    tabs: [{
+        id: 'one',
+        title: 'Hello',
+        content: 'Hello world!'
+    },{
+        id: 'lorem',
+        title: 'Lorem Ipsum',
+        content: 'Lorem ipsum dolor sit amet, etc.'
+    }],
+
+    activeTab: 'one'
+});
+
+tabs.addTab('nested', 'Nested', nestedTabs.render());

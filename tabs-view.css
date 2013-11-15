@@ -60,4 +60,5 @@
 .tabs-view .panes {
     clear: both;
     display: block;
+    padding-top: 10px;
 }

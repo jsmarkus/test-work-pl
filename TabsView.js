@@ -47,10 +47,12 @@
         var tab = this._tabsById[id];
         //TODO: 404
         var index = this._tabs.indexOf(tab);
-        //TODO: IE ployfill
+        //TODO: IE polyfill
         this._tabs.splice(index, 1);
         delete this._tabsById[id];
         this._applyRemoveTab(id);
+
+        //TODO: switch active tab if the removed was active!
     };
 
     proto.activeTab = function(id) {
@@ -102,7 +104,7 @@
         var title = this._createTabTitle(tab);
         var pane = this._createTabPane(tab);
         this.assets.titles.appendChild(title);
-        this.assets.panes.appendChild(pane);
+        // this.assets.panes.appendChild(pane);
 
         this._titleById[tab.id] = title;
         this._paneById[tab.id] = pane;
@@ -111,7 +113,6 @@
     proto._applyRemoveTab = function(id) {
         //TODO: works?
         this.assets.titles.removeChild(this._titleById[id]);
-        this.assets.panes.removeChild(this._paneById[id]);
 
         delete this._titleById[id];
         delete this._paneById[id];
@@ -124,6 +125,10 @@
         var title = this._titleById[id];
         var pane = this._paneById[id];
         
+        if(oldId!==undefined) {
+            var oldTitle = this._titleById[oldId];
+            oldTitle.setAttribute('class', '');
+        }
         title.setAttribute('class', 'active');
 
         var panes = this.assets.panes;

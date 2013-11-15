@@ -3,9 +3,6 @@
 
 var tabs = new TabsView();
 
-tabs.render();
-console.log(tabs);
-document.body.appendChild(tabs.assets.main);
 
 tabs.addTab('one', 'One', 'Lorem ipsum');
 tabs.addTab('two', 'Two', 'Hello world');
@@ -26,3 +23,5 @@ var tabIds = [
 setInterval(function () {
     tabs.activeTab(tabIds[current++ % tabIds.length]);
 }, 1000);
+
+tabs.render(document.body);

@@ -55,8 +55,9 @@
 
     proto.activeTab = function(id) {
         //TODO: get
+        var old = this._activeTabId;
         this._activeTabId = id;
-        this._applyActiveTab(id);
+        this._applyActiveTab(id, old);
     };
 
     proto.tabTitle = function() {
@@ -116,9 +117,20 @@
         delete this._paneById[id];
     };
     
-    proto._applyActiveTab = function(id) {
+    proto._applyActiveTab = function(id, oldId) {
+        if(oldId === id) {
+            return;
+        }
         var title = this._titleById[id];
+        var pane = this._paneById[id];
+        
         title.setAttribute('class', 'active');
+
+        var panes = this.assets.panes;
+        while(panes.firstChild) {
+            panes.removeChild(panes.firstChild);
+        }
+        panes.appendChild(pane);
     };
 
     proto._getTitleElement = function (id) {

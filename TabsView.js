@@ -96,9 +96,15 @@
     };
 
     proto._createTabPane = function(tab) {
-        return domElement('div', {
-            $html: tab.content //TODO: normalize to allow use string as well as HTMLElement
+        var node = domElement('div', {
+            'class': 'tabs-pane'
         });
+        if(tab.content instanceof HTMLElement) {
+            node.appendChild(tab.content);
+        } else {
+            node.innerHTML = tab.content;
+        }
+        return node;
     };
 
     proto._createMainContainer = function() {
@@ -127,7 +133,6 @@
         var title = this._createTabTitle(tab);
         var pane = this._createTabPane(tab);
         this.assets.titles.appendChild(title);
-        // this.assets.panes.appendChild(pane);
 
         this._titleById[tab.id] = title;
         this._paneById[tab.id] = pane;

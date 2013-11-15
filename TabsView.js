@@ -156,7 +156,7 @@
             }
             var value = attrs[attrName];
             if(attrName === '$text') {
-                el.innerText = value;
+                el.textContent = value;
                 continue;
             }
             if(attrName === '$html') {

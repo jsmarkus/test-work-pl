@@ -1,0 +1,43 @@
+.tabs-view {
+    
+}
+.tabs-view .tabs {
+    clear: both;
+    display: block;
+}
+.tabs-view ul.tabs {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.tabs-view ul.tabs li {
+    display: block;
+    list-style: none;
+    width: 100px;
+    float: left;
+    margin: 0;
+    border-bottom: 1px solid black;
+}
+.tabs-view ul.tabs li a {
+    display: block;
+    text-align: center;
+}
+.tabs-view ul.tabs li a:hover {
+    background-color: #eee;
+}
+.tabs-view ul.tabs li.active {
+    background-color: #ccc;
+    border: 1px solid black;
+    border-bottom: none;
+}
+.tabs-view ul.tabs li.active a {
+    background-color: inherit;
+    cursor: text;
+    color: black;
+    text-decoration: none;
+}
+.tabs-view .panes {
+    clear: both;
+    display: block;
+}

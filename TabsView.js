@@ -12,13 +12,15 @@
 }(this, function() {
     'use strict';
 
-    function TabsView() {
+    function TabsView(options) {
         this.assets = {};
         this._tabs = [];
         this._tabsById = {};
 
         this._titleById = {};
         this._paneById = {};
+
+        this._processOptions(options);
     }
 
     var proto = TabsView.prototype;
@@ -37,6 +39,27 @@
             target.appendChild(asMain);
         }
         return asMain;
+    };
+
+    proto._processOptions = function(options) {
+        options = options || {};
+        var tabs = options.tabs || [];
+        var activeTab = options.activeTab || false;
+        var events = options.events || {};
+        var renderTo = options.renderTo || false;
+
+        for (var i = 0; i < tabs.length; i++) {
+            var tab = tabs[i];
+            this.addTab(tab.id, tab.title, tab.content);
+        }
+
+        if (activeTab) {
+            this.activeTab(activeTab);
+        }
+
+        if(renderTo) {
+            this.render(renderTo);
+        }
     };
 
     proto._initLayout = function() {

@@ -49,3 +49,6 @@ var nestedTabs = new TabsView({
 tabs.addTab('nested', 'Nested', nestedTabs.render());
 
 tabs.removeTab('one');
+tabs.tabTitle('two', 'Hello');
+console.log(tabs.tabTitle('two'));
+console.log(tabs.tabTitle('three'));

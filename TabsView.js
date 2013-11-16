@@ -17,8 +17,8 @@
         this._tabs = [];
         this._tabsById = {};
 
-        this._titleById = {};
-        this._paneById = {};
+        this._titleNodeById = {};
+        this._paneNodeById = {};
 
         this._processOptions(options);
     }
@@ -57,7 +57,7 @@
             this.activeTab(activeTab);
         }
 
-        if(renderTo) {
+        if (renderTo) {
             this.render(renderTo);
         }
     };
@@ -87,25 +87,22 @@
     };
 
     proto.removeTab = function(id) {
-        var tab = this._tabsById[id];
-        if(!tab) {
-            throw new Error('Tab not found');
-        }
+        var tab = this._getTab(id);
         var index = -1;
         for (var i = 0; i < this._tabs.length; i++) {
             //why not indexOf? because IE!
-            if(tab === this._tabs[i]) {
+            if (tab === this._tabs[i]) {
                 index = i;
                 break;
             }
         }
 
         //The removed tab is active
-        if(this._activeTabId === id) {
-            if(this._tabs.length === 1) {
+        if (this._activeTabId === id) {
+            if (this._tabs.length === 1) {
                 //only one tab left - just remove content pane
                 this._removeActivePane();
-            } else if(index === 0) {
+            } else if (index === 0) {
                 //we are removing the first tab - switch to the second one
                 this.activeTab(this._tabs[1].id);
             } else {
@@ -126,18 +123,38 @@
         this._applyActiveTab(id, old);
     };
 
-    proto.tabTitle = function() {
+    proto.tabTitle = function(id, text) {
+        var tab = this._getTab(id);
+        if (arguments.length === 1) {
+            return tab.title;
+        }
+        tab.title = '' + text;
+        var titleNode = this._titleNodeById[id];
+        this._setTitleText(titleNode, text);
+    };
 
+    proto._getTab = function(id) {
+        var tab = this._tabsById[id];
+        if (!tab) {
+            throw new Error('Tab not found');
+        }
+        return tab;
     };
 
     proto._createTabTitle = function(tab) {
-        return domElement('li', null, [
+        var node = domElement('li', null, [
             domElement('a', {
                 'href': 'javascript:void(0)',
-                'data-tab-id': tab.id,
-                $text: tab.title
+                'data-tab-id': tab.id
             })
         ]);
+        this._setTitleText(node, tab.title);
+        return node;
+    };
+
+    proto._setTitleText = function(titleNode, text) {
+        var anchor = titleNode.firstChild;
+        anchor.textContent = text;
     };
 
     proto._createTabPane = function(tab) {
@@ -179,8 +196,8 @@
         var pane = this._createTabPane(tab);
         this.assets.titles.appendChild(title);
 
-        this._titleById[tab.id] = title;
-        this._paneById[tab.id] = pane;
+        this._titleNodeById[tab.id] = title;
+        this._paneNodeById[tab.id] = pane;
     };
 
     proto._applyRemoveTab = function(id) {
@@ -188,10 +205,10 @@
             return;
         }
 
-        this.assets.titles.removeChild(this._titleById[id]);
+        this.assets.titles.removeChild(this._titleNodeById[id]);
 
-        delete this._titleById[id];
-        delete this._paneById[id];
+        delete this._titleNodeById[id];
+        delete this._paneNodeById[id];
     };
 
     proto._applyActiveTab = function(id, oldId) {
@@ -202,11 +219,11 @@
         if (oldId === id) {
             return;
         }
-        var title = this._titleById[id];
-        var pane = this._paneById[id];
+        var title = this._titleNodeById[id];
+        var pane = this._paneNodeById[id];
 
         if (oldId !== undefined) {
-            var oldTitle = this._titleById[oldId];
+            var oldTitle = this._titleNodeById[oldId];
             oldTitle.setAttribute('class', '');
         }
         title.setAttribute('class', 'active');
@@ -216,8 +233,8 @@
         panes.appendChild(pane);
     };
 
-    proto._removeActivePane = function () {
-        if(!this._isRendered()) {
+    proto._removeActivePane = function() {
+        if (!this._isRendered()) {
             return;
         }
         var panes = this.assets.panes;
@@ -259,11 +276,11 @@
     };
 
     proto._getTitleElement = function(id) {
-        return this._titleById[id];
+        return this._titleNodeById[id];
     };
 
     proto._getPaneElement = function(id) {
-        return this._paneById[id];
+        return this._paneNodeById[id];
     };
 
     function domElement(tag, attrs, children) {

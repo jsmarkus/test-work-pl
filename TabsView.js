@@ -154,14 +154,14 @@
 
     proto._setTitleText = function(titleNode, text) {
         var anchor = titleNode.firstChild;
-        anchor.textContent = text;
+        anchor.innerText = text;
     };
 
     proto._createTabPane = function(tab) {
         var node = domElement('div', {
             'class': 'tabs-pane'
         });
-        if (tab.content instanceof HTMLElement) {
+        if (tab.content && tab.content.nodeType) { //IE fix for instanceof HTMLElement
             node.appendChild(tab.content);
         } else {
             node.innerHTML = tab.content;
@@ -255,11 +255,12 @@
     proto._bindEvents = function() {
         //TODO: IE!
         var self = this;
-        this.assets.titles.addEventListener('click',
+        addEvent(
+            this.assets.titles,
+            'click',
             function(event) {
                 return self._onTitleClick(event);
-            },
-            false
+            }
         );
     };
 
@@ -293,7 +294,7 @@
             }
             var value = attrs[attrName];
             if (attrName === '$text') {
-                el.textContent = value;
+                el.innerText = value;
                 continue;
             }
             if (attrName === '$html') {
@@ -308,6 +309,20 @@
         }
 
         return el;
+    }
+
+    function addEvent(node, eventName, handler) {
+        if (window.addEventListener) {
+            return node.addEventListener(eventName, handler, false);
+        }
+        if (window.attachEvent) {
+            return node.attachEvent('on' + eventName, function() {
+                var e = window.event;
+                e.target = e.srcElement;
+                console.log(e);
+                handler(e);
+            });
+        }
     }
 
     return TabsView;

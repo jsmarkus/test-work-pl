@@ -60,6 +60,8 @@
         if (renderTo) {
             this.render(renderTo);
         }
+
+        this._vertical = !!options.vertical;
     };
 
     proto._initLayout = function() {
@@ -133,6 +135,16 @@
         this._setTitleText(titleNode, text);
     };
 
+    proto.tabContent = function (id, content) {
+        var tab = this._getTab(id);
+        if (arguments.length === 1) {
+            return tab.content;
+        }
+        tab.content = content;
+        var paneNode = this._paneNodeById[id];
+        this._setPaneContent(paneNode, content);
+    };
+
     proto._getTab = function(id) {
         var tab = this._tabsById[id];
         if (!tab) {
@@ -157,15 +169,19 @@
         anchor.innerText = text;
     };
 
+    proto._setPaneContent = function(paneNode, content) {
+        if (content && content.nodeType) { //IE fix for instanceof HTMLElement
+            paneNode.appendChild(content);
+        } else {
+            paneNode.innerHTML = content;
+        }
+    };
+
     proto._createTabPane = function(tab) {
         var node = domElement('div', {
             'class': 'tabs-pane'
         });
-        if (tab.content && tab.content.nodeType) { //IE fix for instanceof HTMLElement
-            node.appendChild(tab.content);
-        } else {
-            node.innerHTML = tab.content;
-        }
+        this._setPaneContent(node, tab.content);
         return node;
     };
 

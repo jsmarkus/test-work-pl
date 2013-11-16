@@ -88,14 +88,35 @@
 
     proto.removeTab = function(id) {
         var tab = this._tabsById[id];
-        //TODO: 404
-        var index = this._tabs.indexOf(tab);
-        //TODO: IE polyfill
+        if(!tab) {
+            throw new Error('Tab not found');
+        }
+        var index = -1;
+        for (var i = 0; i < this._tabs.length; i++) {
+            //why not indexOf? because IE!
+            if(tab === this._tabs[i]) {
+                index = i;
+                break;
+            }
+        }
+
+        //The removed tab is active
+        if(this._activeTabId === id) {
+            if(this._tabs.length === 1) {
+                //only one tab left - just remove content pane
+                this._removeActivePane();
+            } else if(index === 0) {
+                //we are removing the first tab - switch to the second one
+                this.activeTab(this._tabs[1].id);
+            } else {
+                //switch to the first tab
+                this.activeTab(this._tabs[0].id);
+            }
+        }
+
         this._tabs.splice(index, 1);
         delete this._tabsById[id];
         this._applyRemoveTab(id);
-
-        //TODO: switch active tab if the removed was active!
     };
 
     proto.activeTab = function(id) {
@@ -191,10 +212,18 @@
         title.setAttribute('class', 'active');
 
         var panes = this.assets.panes;
+        this._removeActivePane();
+        panes.appendChild(pane);
+    };
+
+    proto._removeActivePane = function () {
+        if(!this._isRendered()) {
+            return;
+        }
+        var panes = this.assets.panes;
         while (panes.firstChild) {
             panes.removeChild(panes.firstChild);
         }
-        panes.appendChild(pane);
     };
 
     proto._applyAll = function() {

@@ -29,7 +29,7 @@ var tabs = new TabsView({
         content: fixture('four')
     }],
 
-    activeTab: 'three'
+    activeTab: 'one'
 });
 
 var nestedTabs = new TabsView({
@@ -47,3 +47,5 @@ var nestedTabs = new TabsView({
 });
 
 tabs.addTab('nested', 'Nested', nestedTabs.render());
+
+tabs.removeTab('one');

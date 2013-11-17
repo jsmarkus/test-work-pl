@@ -166,7 +166,7 @@
 
     proto._setTitleText = function(titleNode, text) {
         var anchor = titleNode.firstChild;
-        anchor.innerText = text;
+        setText(anchor, text);
     };
 
     proto._setPaneContent = function(paneNode, content) {
@@ -314,7 +314,7 @@
             }
             var value = attrs[attrName];
             if (attrName === '$text') {
-                el.innerText = value;
+                setText(el, value);
                 continue;
             }
             if (attrName === '$html') {
@@ -329,6 +329,13 @@
         }
 
         return el;
+    }
+
+    function setText(node, text) {
+        if ('innerText' in node) {
+            node.innerText = text;
+        }
+        node.textContent = text;
     }
 
     function addEvent(node, eventName, handler) {

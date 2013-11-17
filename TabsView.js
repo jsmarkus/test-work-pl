@@ -286,12 +286,15 @@
      * @memberof TabsView#
      * @access protected
      * @param {HTMLElement} paneNode
-     * @param {String|HTMLElement} content
+     * @param {String|HTMLElement|Null} content
      */
     TabsView.prototype._setPaneContent = function(paneNode, content) {
         if (content && content.nodeType) { //IE fix for instanceof HTMLElement
             paneNode.appendChild(content);
         } else {
+            if(content === null && content === undefined) {
+                content = '';
+            }
             paneNode.innerHTML = content;
         }
     };

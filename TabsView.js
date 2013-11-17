@@ -86,6 +86,10 @@
         var events = options.events || {};
         var renderTo = options.renderTo || false;
 
+        var events = options.events || {};
+        var initTab = 'function' === typeof events.initTab ? events.initTab : false;
+        var activateTab = 'function' === typeof events.activateTab ? events.activateTab : false;
+
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             this.addTab(tab.id, tab.title, tab.content);
@@ -96,6 +100,13 @@
         }
 
         this._vertical = !! options.vertical;
+
+        if (initTab) {
+            this.__onInitTab = initTab;
+        }
+        if (activateTab) {
+            this.__onActivateTab = activateTab;
+        }
 
         if (renderTo) {
             this.render(renderTo);
@@ -290,9 +301,10 @@
      */
     TabsView.prototype._setPaneContent = function(paneNode, content) {
         if (content && content.nodeType) { //IE fix for instanceof HTMLElement
+            paneNode.innerHTML = ''; //TODO: slow!
             paneNode.appendChild(content);
         } else {
-            if(content === null && content === undefined) {
+            if (content === null && content === undefined) {
                 content = '';
             }
             paneNode.innerHTML = content;
@@ -405,6 +417,8 @@
      * @param {String} oldid
      */
     TabsView.prototype._applyActiveTab = function(id, oldId) {
+        var tab = this._getTab(id);
+
         if (!this._isRendered()) {
             return;
         }
@@ -424,6 +438,15 @@
         var panes = this.assets.panes;
         this._removeActivePane();
         panes.appendChild(pane);
+
+        if (this.__onInitTab) {
+            if (tab.content === undefined) {
+                this.__onInitTab.call(this, id, tab);
+            }
+        }
+        if (this.__onActivateTab) {
+            this.__onActivateTab.call(this, id, tab);
+        }
     };
 
     /**

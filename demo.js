@@ -11,6 +11,8 @@ function fixture(fixtureId) {
 var tabs = new TabsView({
     renderTo: document.body,
 
+    vertical: true,
+
     tabs: [{
         id: 'one',
         title: 'One',
@@ -29,7 +31,7 @@ var tabs = new TabsView({
         content: fixture('four')
     }],
 
-    activeTab: 'one'
+    activeTab: 'three'
 });
 
 var nestedTabs = new TabsView({

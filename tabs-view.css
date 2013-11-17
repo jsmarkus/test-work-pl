@@ -12,53 +12,104 @@
     *zoom: 1;
 }
 
+/*Both*/
 .tabs-view {
+    display: block;
 }
 
-.tabs-view ul.tabs {
+.tabs-view > .tabs li {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-bottom: 1px solid #aaa;
 }
 
-.tabs-view ul.tabs li {
+.tabs-view > .tabs {
     list-style: none;
-    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.tabs-view > .tabs li a {
+    display: block;
+    text-align: center;
+    line-height: 40px;
+    padding: 0 20px;
+}
+
+.tabs-view > .tabs > li > a:focus {
+    outline: 0;
+}
+
+.tabs-view > .tabs > li > a:hover {
+    background-color: #eee;
+}
+
+.tabs-view > .tabs li {
+    border: 1px #aaa;
+}
+
+.tabs-view > .tabs .active {
+    background-color: #fff;
+}
+
+.tabs-view > .tabs > li.active > a {
+    background-color: #fff;
+    cursor: default;
+    color: inherit;
+    text-decoration: none;
+}
+
+/*Horizontal*/
+
+.tabs-view-horizontal > .tabs {
+    border-bottom: 1px solid #aaa;
+    display: block;
+    width: 100%;
+}
+
+.tabs-view-horizontal > .tabs li {
+    list-style: none;
+    display: inline-block;
     padding: 0;
     margin: 0;
     margin-bottom: -1px;
 }
 
-.tabs-view ul.tabs li a {
+
+.tabs-view-horizontal > .tabs .active {
+    border-style: solid solid none solid;
+}
+
+.tabs-view-horizontal > .panes {
     display: block;
-    text-align: center;
-    line-height: 20px;
-    padding: 0 20px;
-}
-.tabs-view ul.tabs li a:focus {
-    outline: 0;
-}
-
-.tabs-view ul.tabs li a:hover {
-    background-color: #eee;
-}
-
-.tabs-view ul.tabs li.active {
-    border: 1px solid #aaa;
-    border-bottom: none;
-    background-color: #fff;
-}
-
-.tabs-view ul.tabs li.active a {
-    background-color: inherit;
-    cursor: text;
-    color: inherit;
-    text-decoration: none;
-}
-
-.tabs-view .panes {
-    clear: both;
-    display: block;
+    width: 100%;
     padding-top: 10px;
+}
+
+/*Vertical*/
+.tabs-view-vertical {
+}
+
+.tabs-view-vertical > .tabs {
+    display: table-cell;
+    vertical-align: top;
+    border: 1px #aaa;
+    border-right-style: solid;
+    overflow: visible;
+}
+
+.tabs-view-vertical > .panes {
+    display: table-cell;
+    width: 100%;
+    padding-left: 10px;
+}
+
+.tabs-view-vertical > .tabs li {
+    position: relative;
+    left: 1px;
+    /*margin-right: -4px;*/
+}
+
+.tabs-view-vertical > .tabs .active {
+    border-style: solid none solid solid;
 }

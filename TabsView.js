@@ -57,11 +57,11 @@
             this.activeTab(activeTab);
         }
 
+        this._vertical = !!options.vertical;
+
         if (renderTo) {
             this.render(renderTo);
         }
-
-        this._vertical = !!options.vertical;
     };
 
     proto._initLayout = function() {
@@ -186,8 +186,12 @@
     };
 
     proto._createMainContainer = function() {
+        var cls = 'tabs-view tabs-view-horizontal';
+        if (this._vertical) {
+            cls = 'tabs-view tabs-view-vertical';
+        }
         return domElement('div', {
-            'class': 'tabs-view'
+            'class': cls
         });
     };
 

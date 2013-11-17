@@ -1,3 +1,8 @@
+/**
+ * @author Mark <me@jsman.ru>
+ * @license MIT
+ * @class
+ */
 /*global define, module*/
 (function(root, factory) {
     'use strict';
@@ -12,7 +17,27 @@
 }(this, function() {
     'use strict';
 
-    function TabsView(options) {
+    /**
+     * @typedef {Object} TabOptions
+     * @property {String} id
+     * @property {String} title
+     * @property {String|HTMLElement} content
+     */
+
+    /**
+     * @typedef {Object} TabsViewOptions
+     * @property {String} renderTo
+     * @property {Boolean} vertical
+     * @property {String} activeTab
+     * @property {Array.<TabOptions>} tabs
+     */
+
+    /**
+     * @constructor
+     * @alias TabsView
+     * @param {String} options
+     */
+    var TabsView = function(options) {
         this.assets = {};
         this._tabs = [];
         this._tabsById = {};
@@ -21,11 +46,17 @@
         this._paneNodeById = {};
 
         this._processOptions(options);
-    }
+    };
 
-    var proto = TabsView.prototype;
-
-    proto.render = function(target) {
+    /**
+     * Renders DOM structure, if it is not already rendered.
+     * Moves DOM to target. Returns DOM root.
+     *
+     * @memberof TabsView#
+     * @param {HTMLElement} target
+     * @return HTMLElement
+     */
+    TabsView.prototype.render = function(target) {
         if (!this._isRendered()) {
             this._initLayout();
             this._applyAll();
@@ -41,7 +72,14 @@
         return asMain;
     };
 
-    proto._processOptions = function(options) {
+    /**
+     * Processes constructor options.
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabsViewOptions} options
+     */
+    TabsView.prototype._processOptions = function(options) {
         options = options || {};
         var tabs = options.tabs || [];
         var activeTab = options.activeTab || false;
@@ -57,14 +95,20 @@
             this.activeTab(activeTab);
         }
 
-        this._vertical = !!options.vertical;
+        this._vertical = !! options.vertical;
 
         if (renderTo) {
             this.render(renderTo);
         }
     };
 
-    proto._initLayout = function() {
+    /**
+     * Initializes initial DOM structure.
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._initLayout = function() {
         var assets = this.assets;
         var asMain = assets.main = this._createMainContainer();
         var asTitles = assets.titles = this._createTitlesContainer();
@@ -73,11 +117,26 @@
         asMain.appendChild(asPanes);
     };
 
-    proto._isRendered = function() {
+    /**
+     * Checks if the widget is rendered
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @returns {Boolean} true if the widget is rendered
+     */
+    TabsView.prototype._isRendered = function() {
         return !!this.assets.main;
     };
 
-    proto.addTab = function(id, title, content) {
+    /**
+     * Adds a tab
+     *
+     * @memberof TabsView#
+     * @param {String} id
+     * @param {String} title
+     * @param {String|HTMLElement} content
+     */
+    TabsView.prototype.addTab = function(id, title, content) {
         var tab = {
             id: id,
             title: title,
@@ -88,7 +147,13 @@
         this._applyAddTab(tab);
     };
 
-    proto.removeTab = function(id) {
+    /**
+     * Removes tab with the given `id`
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     */
+    TabsView.prototype.removeTab = function(id) {
         var tab = this._getTab(id);
         var index = -1;
         for (var i = 0; i < this._tabs.length; i++) {
@@ -118,14 +183,28 @@
         this._applyRemoveTab(id);
     };
 
-    proto.activeTab = function(id) {
+    /**
+     * Sets activeTab to `id`
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     */
+    TabsView.prototype.activeTab = function(id) {
         //TODO: get
         var old = this._activeTabId;
         this._activeTabId = id;
         this._applyActiveTab(id, old);
     };
 
-    proto.tabTitle = function(id, text) {
+    /**
+     * Gets or sets tab title
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     * @param {String=} title tab title
+     * @return {String|undefined} Title, if only `id` is passed
+     */
+    TabsView.prototype.tabTitle = function(id, text) {
         var tab = this._getTab(id);
         if (arguments.length === 1) {
             return tab.title;
@@ -135,7 +214,15 @@
         this._setTitleText(titleNode, text);
     };
 
-    proto.tabContent = function (id, content) {
+    /**
+     * Gets or sets tab content
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     * @param {String|HTMLElement=} title tab content
+     * @return {String|undefined} Content, if only `id` is passed
+     */
+    TabsView.prototype.tabContent = function(id, content) {
         var tab = this._getTab(id);
         if (arguments.length === 1) {
             return tab.content;
@@ -145,7 +232,15 @@
         this._setPaneContent(paneNode, content);
     };
 
-    proto._getTab = function(id) {
+    /**
+     * Gets tab object by `id`
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     * @return {TabOptions} tab object
+     */
+    TabsView.prototype._getTab = function(id) {
         var tab = this._tabsById[id];
         if (!tab) {
             throw new Error('Tab not found');
@@ -153,7 +248,15 @@
         return tab;
     };
 
-    proto._createTabTitle = function(tab) {
+    /**
+     * Creates DOM structure for a tab title
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTabTitle = function(tab) {
         var node = domElement('li', null, [
             domElement('a', {
                 'href': 'javascript:void(0)',
@@ -164,12 +267,28 @@
         return node;
     };
 
-    proto._setTitleText = function(titleNode, text) {
+    /**
+     * Sets title text in tab title DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {HTMLElement} titleNode
+     * @param {String} text
+     */
+    TabsView.prototype._setTitleText = function(titleNode, text) {
         var anchor = titleNode.firstChild;
         setText(anchor, text);
     };
 
-    proto._setPaneContent = function(paneNode, content) {
+    /**
+     * Sets pane content in tab pane DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {HTMLElement} paneNode
+     * @param {String|HTMLElement} content
+     */
+    TabsView.prototype._setPaneContent = function(paneNode, content) {
         if (content && content.nodeType) { //IE fix for instanceof HTMLElement
             paneNode.appendChild(content);
         } else {
@@ -177,7 +296,15 @@
         }
     };
 
-    proto._createTabPane = function(tab) {
+    /**
+     * Creates DOM structure for pane
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTabPane = function(tab) {
         var node = domElement('div', {
             'class': 'tabs-pane'
         });
@@ -185,7 +312,14 @@
         return node;
     };
 
-    proto._createMainContainer = function() {
+    /**
+     * Creates main container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createMainContainer = function() {
         var cls = 'tabs-view tabs-view-horizontal';
         if (this._vertical) {
             cls = 'tabs-view tabs-view-vertical';
@@ -195,19 +329,40 @@
         });
     };
 
-    proto._createTitlesContainer = function() {
+    /**
+     * Creates titles container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTitlesContainer = function() {
         return domElement('ul', {
             'class': 'tabs clearfix'
         });
     };
 
-    proto._createPanesContainer = function() {
+    /**
+     * Creates panes container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createPanesContainer = function() {
         return domElement('div', {
             'class': 'panes'
         });
     };
 
-    proto._applyAddTab = function(tab) {
+    /**
+     * Applies adding tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     */
+    TabsView.prototype._applyAddTab = function(tab) {
         if (!this._isRendered()) {
             return;
         }
@@ -220,7 +375,14 @@
         this._paneNodeById[tab.id] = pane;
     };
 
-    proto._applyRemoveTab = function(id) {
+    /**
+     * Applies removing tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     */
+    TabsView.prototype._applyRemoveTab = function(id) {
         if (!this._isRendered()) {
             return;
         }
@@ -231,7 +393,15 @@
         delete this._paneNodeById[id];
     };
 
-    proto._applyActiveTab = function(id, oldId) {
+    /**
+     * Applies switching tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     * @param {String} oldid
+     */
+    TabsView.prototype._applyActiveTab = function(id, oldId) {
         if (!this._isRendered()) {
             return;
         }
@@ -253,7 +423,13 @@
         panes.appendChild(pane);
     };
 
-    proto._removeActivePane = function() {
+    /**
+     * Removes current pane from DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._removeActivePane = function() {
         if (!this._isRendered()) {
             return;
         }
@@ -263,7 +439,13 @@
         }
     };
 
-    proto._applyAll = function() {
+    /**
+     * Applies all changes to DOM. Called once after a render
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._applyAll = function() {
         var tabs = this._tabs;
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
@@ -272,7 +454,13 @@
         this._applyActiveTab(this._activeTabId);
     };
 
-    proto._bindEvents = function() {
+    /**
+     * Bind event handlers. Called once after a render
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._bindEvents = function() {
         //TODO: IE!
         var self = this;
         addEvent(
@@ -284,7 +472,14 @@
         );
     };
 
-    proto._onTitleClick = function(event) {
+    /**
+     * Handles clicking on tab title
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {Event} event
+     */
+    TabsView.prototype._onTitleClick = function(event) {
         var target = event.target; //TODO: IE!
         if (!target) {
             return;
@@ -296,14 +491,38 @@
         this.activeTab(tabId);
     };
 
-    proto._getTitleElement = function(id) {
+    /**
+     * Gets title DOM element
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id tab id
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._getTitleElement = function(id) {
         return this._titleNodeById[id];
     };
 
-    proto._getPaneElement = function(id) {
+    /**
+     * Gets pane DOM element
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id tab id
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._getPaneElement = function(id) {
         return this._paneNodeById[id];
     };
 
+    /**
+     * Creates DOM element
+     * @access private
+     * @param {String} tag
+     * @param {Object} attrs
+     * @param {Array.<HTMLElement>} children
+     * @return {HTMLElement}
+     */
     function domElement(tag, attrs, children) {
         attrs = attrs || {};
         children = children || {};
@@ -331,6 +550,12 @@
         return el;
     }
 
+    /**
+     * Sets inner text of DOM element
+     * @access private
+     * @param {HTMLElement} node
+     * @param {String} text
+     */
     function setText(node, text) {
         if ('innerText' in node) {
             node.innerText = text;
@@ -338,6 +563,13 @@
         node.textContent = text;
     }
 
+    /**
+     * Adds event to DOM element
+     * @access private
+     * @param {HTMLElement} node
+     * @param {String} eventName
+     * @param {Function} handler
+     */
     function addEvent(node, eventName, handler) {
         if (window.addEventListener) {
             return node.addEventListener(eventName, handler, false);

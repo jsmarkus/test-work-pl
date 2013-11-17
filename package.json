@@ -1,0 +1,22 @@
+{
+  "name": "tabs-view",
+  "version": "0.0.1",
+  "description": "TabsView",
+  "main": "TabsView.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jsmarkus/test-work-pl.git"
+  },
+  "author": "Mark <me@jsman.ru>",
+  "license": "BSD",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-jsdoc": "~0.4.2"
+  }
+}

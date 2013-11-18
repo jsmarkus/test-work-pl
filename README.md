@@ -122,7 +122,7 @@ tabs.tabContent('tab-id-100', document.getElemenById('my-cool-page'));
 tabs.tabContent('tab-id-100', 'Hello world!');
 ```
 
-Get tab title:
+Get tab content:
 
 ```javascript
 tabs.tabContent('tab-id-100'); //returns 'Hello world!'

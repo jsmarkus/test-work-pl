@@ -18,6 +18,12 @@
     'use strict';
 
     /**
+     * @typedef {Object} TabEvents
+     * @property {funcion} activateTab called when the tab `id` is activated
+     * @property {funcion} initTab called when the tab `id` is activated and it is empty. Use it to implement tab content loaders
+     */
+
+    /**
      * @typedef {Object} TabOptions
      * @property {String} id
      * @property {String} title
@@ -26,10 +32,11 @@
 
     /**
      * @typedef {Object} TabsViewOptions
-     * @property {String} renderTo
-     * @property {Boolean} vertical
-     * @property {String} activeTab
-     * @property {Array.<TabOptions>} tabs
+     * @property {HTMLElement} renderTo parent DOM node (used as a container)
+     * @property {Boolean} vertical whether tabs are vertical
+     * @property {String} activeTab active tab ID
+     * @property {Array.<TabOptions>} tabs array of tab definitions
+     * @property {TabEvents} events event handlers
      */
 
     /**

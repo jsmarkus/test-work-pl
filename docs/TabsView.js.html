@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TabsView.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: TabsView.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @author Mark &lt;me@jsman.ru>
+ * @license MIT
+ * @class
+ */
+/*global define, module*/
+(function(root, factory) {
+    'use strict';
+    //UMD header
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else {
+        root.TabsView = factory();
+    }
+}(this, function() {
+    'use strict';
+
+    /**
+     * @typedef {Object} TabOptions
+     * @property {String} id
+     * @property {String} title
+     * @property {String|HTMLElement} content
+     */
+
+    /**
+     * @typedef {Object} TabsViewOptions
+     * @property {String} renderTo
+     * @property {Boolean} vertical
+     * @property {String} activeTab
+     * @property {Array.&lt;TabOptions>} tabs
+     */
+
+    /**
+     * @constructor
+     * @alias TabsView
+     * @param {String} options
+     */
+    var TabsView = function(options) {
+        this.assets = {};
+        this._tabs = [];
+        this._tabsById = {};
+
+        this._titleNodeById = {};
+        this._paneNodeById = {};
+
+        this._processOptions(options);
+    };
+
+    /**
+     * Renders DOM structure, if it is not already rendered.
+     * Moves DOM to target. Returns DOM root.
+     *
+     * @memberof TabsView#
+     * @param {HTMLElement} target
+     * @return HTMLElement
+     */
+    TabsView.prototype.render = function(target) {
+        if (!this._isRendered()) {
+            this._initLayout();
+            this._applyAll();
+            this._bindEvents();
+        }
+
+        var asMain = this.assets.main;
+
+        //TODO what if target is a string?
+        if (target) {
+            target.appendChild(asMain);
+        }
+        return asMain;
+    };
+
+    /**
+     * Processes constructor options.
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabsViewOptions} options
+     */
+    TabsView.prototype._processOptions = function(options) {
+        options = options || {};
+        var tabs = options.tabs || [];
+        var activeTab = options.activeTab || false;
+        var events = options.events || {};
+        var renderTo = options.renderTo || false;
+
+        var events = options.events || {};
+        var initTab = 'function' === typeof events.initTab ? events.initTab : false;
+        var activateTab = 'function' === typeof events.activateTab ? events.activateTab : false;
+
+        for (var i = 0; i &lt; tabs.length; i++) {
+            var tab = tabs[i];
+            this.addTab(tab.id, tab.title, tab.content);
+        }
+
+        if (activeTab) {
+            this.activeTab(activeTab);
+        }
+
+        this._vertical = !! options.vertical;
+
+        if (initTab) {
+            this.__onInitTab = initTab;
+        }
+        if (activateTab) {
+            this.__onActivateTab = activateTab;
+        }
+
+        if (renderTo) {
+            this.render(renderTo);
+        }
+    };
+
+    /**
+     * Initializes initial DOM structure.
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._initLayout = function() {
+        var assets = this.assets;
+        var asMain = assets.main = this._createMainContainer();
+        var asTitles = assets.titles = this._createTitlesContainer();
+        var asPanes = assets.panes = this._createPanesContainer();
+        asMain.appendChild(asTitles);
+        asMain.appendChild(asPanes);
+    };
+
+    /**
+     * Checks if the widget is rendered
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @returns {Boolean} true if the widget is rendered
+     */
+    TabsView.prototype._isRendered = function() {
+        return !!this.assets.main;
+    };
+
+    /**
+     * Adds a tab
+     *
+     * @memberof TabsView#
+     * @param {String} id
+     * @param {String} title
+     * @param {String|HTMLElement} content
+     */
+    TabsView.prototype.addTab = function(id, title, content) {
+        var tab = {
+            id: id,
+            title: title,
+            content: content
+        };
+        this._tabs.push(tab);
+        this._tabsById[id] = tab; //TODO: control unique id
+        this._applyAddTab(tab);
+    };
+
+    /**
+     * Removes tab with the given `id`
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     */
+    TabsView.prototype.removeTab = function(id) {
+        var tab = this._getTab(id);
+        var index = -1;
+        for (var i = 0; i &lt; this._tabs.length; i++) {
+            //why not indexOf? because IE!
+            if (tab === this._tabs[i]) {
+                index = i;
+                break;
+            }
+        }
+
+        //The removed tab is active
+        if (this._activeTabId === id) {
+            if (this._tabs.length === 1) {
+                //only one tab left - just remove content pane
+                this._removeActivePane();
+            } else if (index === 0) {
+                //we are removing the first tab - switch to the second one
+                this.activeTab(this._tabs[1].id);
+            } else {
+                //switch to the first tab
+                this.activeTab(this._tabs[0].id);
+            }
+        }
+
+        this._tabs.splice(index, 1);
+        delete this._tabsById[id];
+        this._applyRemoveTab(id);
+    };
+
+    /**
+     * Sets activeTab to `id`
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     */
+    TabsView.prototype.activeTab = function(id) {
+        if(arguments.length === 0) {
+            return this._activeTabId;
+        }
+        var old = this._activeTabId;
+        this._activeTabId = id;
+        this._applyActiveTab(id, old);
+    };
+
+    /**
+     * Gets or sets tab title
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     * @param {String=} title tab title
+     * @return {String|undefined} Title, if only `id` is passed
+     */
+    TabsView.prototype.tabTitle = function(id, text) {
+        var tab = this._getTab(id);
+        if (arguments.length === 1) {
+            return tab.title;
+        }
+        tab.title = '' + text;
+        var titleNode = this._titleNodeById[id];
+        this._setTitleText(titleNode, text);
+    };
+
+    /**
+     * Gets or sets tab content
+     *
+     * @memberof TabsView#
+     * @param {String} id tab id
+     * @param {String|HTMLElement=} title tab content
+     * @return {String|undefined} Content, if only `id` is passed
+     */
+    TabsView.prototype.tabContent = function(id, content) {
+        var tab = this._getTab(id);
+        if (arguments.length === 1) {
+            return tab.content;
+        }
+        tab.content = content;
+        var paneNode = this._paneNodeById[id];
+        this._setPaneContent(paneNode, content);
+    };
+
+    /**
+     * Gets tab object by `id`
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     * @return {TabOptions} tab object
+     */
+    TabsView.prototype._getTab = function(id) {
+        var tab = this._tabsById[id];
+        if (!tab) {
+            throw new Error('Tab not found');
+        }
+        return tab;
+    };
+
+    /**
+     * Creates DOM structure for a tab title
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTabTitle = function(tab) {
+        var node = domElement('li', {
+            'data-tab-id': tab.id
+        }, [
+            domElement('a', {
+                'href': 'javascript:void(0)',
+                'data-tab-id': tab.id
+            })
+        ]);
+        this._setTitleText(node, tab.title);
+        return node;
+    };
+
+    /**
+     * Sets title text in tab title DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {HTMLElement} titleNode
+     * @param {String} text
+     */
+    TabsView.prototype._setTitleText = function(titleNode, text) {
+        var anchor = titleNode.firstChild;
+        setText(anchor, text);
+    };
+
+    /**
+     * Sets pane content in tab pane DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {HTMLElement} paneNode
+     * @param {String|HTMLElement|Null} content
+     */
+    TabsView.prototype._setPaneContent = function(paneNode, content) {
+        if (content && content.nodeType) { //IE fix for instanceof HTMLElement
+            paneNode.innerHTML = ''; //TODO: slow!
+            paneNode.appendChild(content);
+        } else {
+            if (content === null && content === undefined) {
+                content = '';
+            }
+            paneNode.innerHTML = content;
+        }
+    };
+
+    /**
+     * Creates DOM structure for pane
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTabPane = function(tab) {
+        var node = domElement('div', {
+            'class': 'tabs-pane'
+        });
+        this._setPaneContent(node, tab.content);
+        return node;
+    };
+
+    /**
+     * Creates main container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createMainContainer = function() {
+        var cls = 'tabs-view tabs-view-horizontal';
+        if (this._vertical) {
+            cls = 'tabs-view tabs-view-vertical';
+        }
+        return domElement('div', {
+            'class': cls
+        });
+    };
+
+    /**
+     * Creates titles container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createTitlesContainer = function() {
+        return domElement('ul', {
+            'class': 'tabs clearfix'
+        });
+    };
+
+    /**
+     * Creates panes container DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._createPanesContainer = function() {
+        return domElement('div', {
+            'class': 'panes'
+        });
+    };
+
+    /**
+     * Applies adding tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {TabOptions} tab
+     */
+    TabsView.prototype._applyAddTab = function(tab) {
+        if (!this._isRendered()) {
+            return;
+        }
+
+        var title = this._createTabTitle(tab);
+        var pane = this._createTabPane(tab);
+        this.assets.titles.appendChild(title);
+
+        this._titleNodeById[tab.id] = title;
+        this._paneNodeById[tab.id] = pane;
+    };
+
+    /**
+     * Applies removing tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     */
+    TabsView.prototype._applyRemoveTab = function(id) {
+        if (!this._isRendered()) {
+            return;
+        }
+
+        this.assets.titles.removeChild(this._titleNodeById[id]);
+
+        delete this._titleNodeById[id];
+        delete this._paneNodeById[id];
+    };
+
+    /**
+     * Applies switching tab to DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id
+     * @param {String} oldid
+     */
+    TabsView.prototype._applyActiveTab = function(id, oldId) {
+        var tab = this._getTab(id);
+
+        if (!this._isRendered()) {
+            return;
+        }
+
+        if (oldId === id) {
+            return;
+        }
+        var title = this._titleNodeById[id];
+        var pane = this._paneNodeById[id];
+
+        if (oldId !== undefined) {
+            var oldTitle = this._titleNodeById[oldId];
+            oldTitle.setAttribute('class', '');
+        }
+        title.setAttribute('class', 'active');
+
+        var panes = this.assets.panes;
+        this._removeActivePane();
+        panes.appendChild(pane);
+
+        if (this.__onInitTab) {
+            if (tab.content === undefined) {
+                this.__onInitTab.call(this, id, tab);
+            }
+        }
+        if (this.__onActivateTab) {
+            this.__onActivateTab.call(this, id, tab);
+        }
+    };
+
+    /**
+     * Removes current pane from DOM
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._removeActivePane = function() {
+        if (!this._isRendered()) {
+            return;
+        }
+        var panes = this.assets.panes;
+        while (panes.firstChild) {
+            panes.removeChild(panes.firstChild);
+        }
+    };
+
+    /**
+     * Applies all changes to DOM. Called once after a render
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._applyAll = function() {
+        var tabs = this._tabs;
+        for (var i = 0; i &lt; tabs.length; i++) {
+            var tab = tabs[i];
+            this._applyAddTab(tab);
+        }
+        if(undefined === this._activeTabId) {
+            this._activeTabId = tabs[0].id; //Set first tab as active if none is set
+        }
+        this._applyActiveTab(this._activeTabId);
+    };
+
+    /**
+     * Bind event handlers. Called once after a render
+     *
+     * @memberof TabsView#
+     * @access protected
+     */
+    TabsView.prototype._bindEvents = function() {
+        //TODO: IE!
+        var self = this;
+        addEvent(
+            this.assets.titles,
+            'click',
+            function(event) {
+                return self._onTitleClick(event);
+            }
+        );
+    };
+
+    /**
+     * Handles clicking on tab title
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {Event} event
+     */
+    TabsView.prototype._onTitleClick = function(event) {
+        var target = event.target; //TODO: IE!
+        if (!target) {
+            return;
+        }
+        if (!target.hasAttribute('data-tab-id')) {
+            return;
+        }
+        var tabId = target.getAttribute('data-tab-id');
+        this.activeTab(tabId);
+    };
+
+    /**
+     * Gets title DOM element
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id tab id
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._getTitleElement = function(id) {
+        return this._titleNodeById[id];
+    };
+
+    /**
+     * Gets pane DOM element
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {String} id tab id
+     * @return {HTMLElement}
+     */
+    TabsView.prototype._getPaneElement = function(id) {
+        return this._paneNodeById[id];
+    };
+
+    /**
+     * Creates DOM element
+     * @access private
+     * @param {String} tag
+     * @param {Object} attrs
+     * @param {Array.&lt;HTMLElement>} children
+     * @return {HTMLElement}
+     */
+    function domElement(tag, attrs, children) {
+        attrs = attrs || {};
+        children = children || {};
+        var el = document.createElement(tag);
+        for (var attrName in attrs) {
+            if (!attrs.hasOwnProperty(attrName)) {
+                continue;
+            }
+            var value = attrs[attrName];
+            if (attrName === '$text') {
+                setText(el, value);
+                continue;
+            }
+            if (attrName === '$html') {
+                el.innerHTML = value;
+                continue;
+            }
+            el.setAttribute(attrName, value);
+        }
+
+        for (var i = 0; i &lt; children.length; i++) {
+            el.appendChild(children[i]);
+        }
+
+        return el;
+    }
+
+    /**
+     * Sets inner text of DOM element
+     * @access private
+     * @param {HTMLElement} node
+     * @param {String} text
+     */
+    function setText(node, text) {
+        if ('innerText' in node) {
+            node.innerText = text;
+        }
+        node.textContent = text;
+    }
+
+    /**
+     * Adds event to DOM element
+     * @access private
+     * @param {HTMLElement} node
+     * @param {String} eventName
+     * @param {Function} handler
+     */
+    function addEvent(node, eventName, handler) {
+        if (window.addEventListener) {
+            return node.addEventListener(eventName, handler, false);
+        }
+        if (window.attachEvent) {
+            return node.attachEvent('on' + eventName, function() {
+                var e = window.event;
+                e.target = e.srcElement;
+                handler(e);
+            });
+        }
+    }
+
+    return TabsView;
+}));</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="TabsView.html">TabsView</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Mon Nov 18 2013 09:38:18 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

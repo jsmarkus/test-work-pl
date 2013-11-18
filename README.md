@@ -8,7 +8,7 @@ Browsers compatibility:
  * Chrome 24
  * Firefox 25
  * Opera 12
- * IE 8 normal mode. Haven't tested on other IE.
+ * IE 8,9,10
 
 Technologies:
 

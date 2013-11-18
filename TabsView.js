@@ -43,7 +43,7 @@
     /**
      * @constructor
      * @alias TabsView
-     * @param {String} options
+     * @param {TabsViewOptions} options
      */
     var TabsView = function(options) {
         this.assets = {};

@@ -3,12 +3,12 @@ TabsView
 
 `TabsView` is used fot tabbed content navigation.
 
-Browsers compatibility:
+Tested in browsers:
 
  * Chrome 24
- * Firefox 25
+ * Firefox 12, 25
  * Opera 12
- * IE 8,9,10
+ * IE 8, 9, 10
 
 Technologies:
 

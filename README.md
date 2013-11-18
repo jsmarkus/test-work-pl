@@ -54,6 +54,9 @@ var tabs = new TabsView({
 
     //Vertical tabs orientation:
     vertical: true, //default: false
+    
+    //Do not use mouse wheel
+    useWheel: false, //default is true, i.e. mouse wheel is used by default
 
     //What element is used as container:
     renderTo: document.body, //default: none
@@ -98,6 +101,18 @@ Find out which tab is active:
 
 ```javascript
 tabs.activeTab(); //returns 'tab-id-100'
+```
+
+Activate next tab:
+
+```javascript
+tabs.nextTab();
+```
+
+Activate previous tab:
+
+```javascript
+tabs.prevTab();
 ```
 
 Set tab title:

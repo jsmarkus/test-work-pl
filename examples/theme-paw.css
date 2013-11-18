@@ -51,7 +51,7 @@
 }
 
 
-.theme-paw.tabs-view .panes {
+.theme-paw.tabs-view > .panes {
     border-radius: 50px;
     width: 100px;
     height: 100px;
@@ -60,6 +60,13 @@
 
     top: 60px;
     left: 50px;
+
+    overflow: hidden;
+}
+
+.theme-paw.tabs-view > .panes > .tabs-pane {
+    text-align: center;
+    overflow: hidden;
 }
 
 .theme-paw.tabs-view {

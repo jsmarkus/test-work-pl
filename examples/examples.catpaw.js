@@ -6,19 +6,19 @@ define(function(require) {
             tabs: [{
                 id: 0,
                 title: '1',
-                content: ''
+                content: 'Да-да. Это тоже TabsView!'
             },{
                 id: 1,
                 title: '2',
-                content: ''
+                content: 'Мяу!'
             },{
                 id: 2,
                 title: '3',
-                content: ''
+                content: 'Мяяяяу!'
             },{
                 id: 3,
                 title: '4',
-                content: ''
+                content: '<img src="./cat.jpg" width="100" />'
             }]
         });
 

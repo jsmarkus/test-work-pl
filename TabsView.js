@@ -201,7 +201,9 @@
      * @param {String} id tab id
      */
     TabsView.prototype.activeTab = function(id) {
-        //TODO: get
+        if(arguments.length === 0) {
+            return this._activeTabId;
+        }
         var old = this._activeTabId;
         this._activeTabId = id;
         this._applyActiveTab(id, old);
@@ -477,6 +479,9 @@
             var tab = tabs[i];
             this._applyAddTab(tab);
         }
+        if(undefined === this._activeTabId) {
+            this._activeTabId = tabs[0].id; //Set first tab as active if none is set
+        }
         this._applyActiveTab(this._activeTabId);
     };
 
@@ -604,7 +609,6 @@
             return node.attachEvent('on' + eventName, function() {
                 var e = window.event;
                 e.target = e.srcElement;
-                console.log(e);
                 handler(e);
             });
         }

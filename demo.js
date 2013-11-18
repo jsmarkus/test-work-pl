@@ -62,6 +62,8 @@ function demo() {
     var inTabContent = byId('in-tabcontent');
     var btnTabTitle = byId('btn-tabtitle');
     var inTabTitle = byId('in-tabtitle');
+    var btnNextTab = byId('btn-next');
+    var btnPrevTab = byId('btn-prev');
 
     btnAddTab.onclick = function() {
         var id = 'tab-' + Math.floor(Math.random() * 1e5);
@@ -86,5 +88,12 @@ function demo() {
 
     btnTabContent.onclick = function () {
         tabs.tabContent(tabs.activeTab(), inTabContent.value);
+    };
+
+    btnNextTab.onclick = function () {
+        tabs.nextTab();
+    };
+    btnPrevTab.onclick = function () {
+        tabs.prevTab();
     };
 }

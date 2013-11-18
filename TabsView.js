@@ -201,12 +201,42 @@
      * @param {String} id tab id
      */
     TabsView.prototype.activeTab = function(id) {
-        if(arguments.length === 0) {
+        if (arguments.length === 0) {
             return this._activeTabId;
         }
         var old = this._activeTabId;
         this._activeTabId = id;
         this._applyActiveTab(id, old);
+    };
+
+
+    TabsView.prototype.nextTab = function() {
+        var index = this._indexOf(this._activeTabId);
+        var next = this._tabs[index + 1];
+        if (next) {
+            this.activeTab(next.id);
+        }
+    };
+
+    TabsView.prototype.prevTab = function() {
+        var index = this._indexOf(this._activeTabId);
+        var prev = this._tabs[index - 1];
+        if (prev) {
+            this.activeTab(prev.id);
+        }
+    };
+
+    TabsView.prototype._indexOf = function(id) {
+        var tab = this._getTab(id);
+        var index = -1;
+        for (var i = 0; i < this._tabs.length; i++) {
+            //why not indexOf? because IE!
+            if (tab === this._tabs[i]) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     };
 
     /**
@@ -481,7 +511,7 @@
             var tab = tabs[i];
             this._applyAddTab(tab);
         }
-        if(undefined === this._activeTabId) {
+        if (undefined === this._activeTabId) {
             this._activeTabId = tabs[0].id; //Set first tab as active if none is set
         }
         this._applyActiveTab(this._activeTabId);
@@ -503,6 +533,20 @@
                 return self._onTitleClick(event);
             }
         );
+        addEvent(
+            this.assets.titles,
+            'mousewheel',
+            function(event) {
+                return self._onTitleWheel(event);
+            }
+        );
+        addEvent(
+            this.assets.titles,
+            'DOMMouseScroll',
+            function(event) {
+                return self._onTitleWheel(event);
+            }
+        );
     };
 
     /**
@@ -512,8 +556,20 @@
      * @access protected
      * @param {Event} event
      */
+    TabsView.prototype._onTitleWheel = function(event) {
+        var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail))); //http://www.sitepoint.com/html5-javascript-mouse-wheel/
+        event.preventDefault && event.preventDefault();
+        event.returnValue = false;
+
+        if (delta > 0) {
+            this.prevTab();
+            return;
+        }
+        this.nextTab();
+
+    };
     TabsView.prototype._onTitleClick = function(event) {
-        var target = event.target; //TODO: IE!
+        var target = event.target;
         if (!target) {
             return;
         }

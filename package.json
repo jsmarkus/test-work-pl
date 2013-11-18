@@ -17,6 +17,7 @@
   "license": "BSD",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-jsdoc": "~0.4.2"
+    "grunt-jsdoc": "~0.4.2",
+    "grunt-contrib-uglify": "~0.2.7"
   }
 }

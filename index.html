@@ -3,37 +3,61 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title></title>
+    <title>TabsView</title>
+    <style type="text/css">
+    #wrapper {
+        clear: both;
+    }
+
+    #tabs-container {
+        width: 50%;
+        min-width: 500px;
+        float: left;
+    }
+    .api-box {
+        float: left;
+        width: 50%;
+        min-width: 500px;
+        background: #BCCBEA;
+    }
+    </style>
 </head>
 <body onload="demo()">
     <h3>TabsView demo</h3>
-    <div id="tabs-container"></div>
-    <hr />
-    <div>
-        <p>
-            <button id="btn-addtab">addTab</button>
-        </p>
-        <p>
-            <button id="btn-removetab">removeTab</button>
-        </p>
-        <p>
-            <button id="btn-getactivetab">activeTab()</button>
-            <code id="out-getactivetab"></code>
-        </p>
-        <p>
-            <button id="btn-setactivetab">activeTab('three')</button>
-        </p>
-        <p>
-            <button id="btn-tabtitle">tabTitle</button>(<input type="text" id="in-tabtitle" />)
-        </p>
-        <p>
-            <button id="btn-tabcontent">tabContent</button>(<input type="text" id="in-tabcontent" />)
-        </p>
-    <hr />
-    </div>
-    <div>
-        <p><a href="http://jsmarkus.github.io/test-work-pl/examples">More examples</a></p>
-        <p><a href="http://jsmarkus.github.io/test-work-pl/docs/TabsView.html">TabsView API documentation</a></p>
+    <p>
+        <em>Click on tabs or turn the mouse wheel!</em>
+        <a href="http://jsmarkus.github.io/test-work-pl/examples">More examples.</a>
+        <a href="http://jsmarkus.github.io/test-work-pl/docs/TabsView.html">API documentation.</a>
+    </p>
+
+    <div id="wraper">
+        <div id="tabs-container"></div>
+        <div class="api-box">
+            <h3>API box</h3>
+            <p>
+                <button id="btn-addtab">addTab</button>
+            </p>
+            <p>
+                <button id="btn-removetab">removeTab</button>
+            </p>
+            <p>
+                <button id="btn-getactivetab">activeTab()</button>
+                <code id="out-getactivetab"></code>
+            </p>
+            <p>
+                <button id="btn-setactivetab">activeTab('three')</button>
+            </p>
+            <p>
+                <button id="btn-tabtitle">tabTitle</button>(<input type="text" id="in-tabtitle" />)
+            </p>
+            <p>
+                <button id="btn-tabcontent">tabContent</button>(<input type="text" id="in-tabcontent" />)
+            </p>
+            <p>
+                <button id="btn-prev">&lt;&lt;&lt; prevTab</button>
+                <button id="btn-next">nextTab &gt;&gt;&gt;</button>
+            </p>
+        </div>
     </div>
     <link rel="stylesheet" type="text/css" href="tabs-view.css">
     <script src="TabsView.js"></script>

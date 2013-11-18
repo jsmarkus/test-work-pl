@@ -210,6 +210,11 @@
     };
 
 
+    /**
+     * Activates the next tab
+     *
+     * @memberof TabsView#
+     */
     TabsView.prototype.nextTab = function() {
         var index = this._indexOf(this._activeTabId);
         var next = this._tabs[index + 1];
@@ -218,6 +223,11 @@
         }
     };
 
+    /**
+     * Activates the previous tab
+     *
+     * @memberof TabsView#
+     */
     TabsView.prototype.prevTab = function() {
         var index = this._indexOf(this._activeTabId);
         var prev = this._tabs[index - 1];
@@ -226,6 +236,13 @@
         }
     };
 
+    /**
+     * Returns tab index by given tab `id`
+     *
+     * @memberof TabsView#
+     * @param {String} id
+     * @return {Number} index
+     */
     TabsView.prototype._indexOf = function(id) {
         var tab = this._getTab(id);
         var index = -1;

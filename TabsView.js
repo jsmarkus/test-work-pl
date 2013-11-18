@@ -270,7 +270,9 @@
      * @return {HTMLElement}
      */
     TabsView.prototype._createTabTitle = function(tab) {
-        var node = domElement('li', null, [
+        var node = domElement('li', {
+            'data-tab-id': tab.id
+        }, [
             domElement('a', {
                 'href': 'javascript:void(0)',
                 'data-tab-id': tab.id

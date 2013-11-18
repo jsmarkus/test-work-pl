@@ -3,7 +3,7 @@ define(function(require) {
 
     var navigation = new TabsView({
         renderTo: document.body,
-        activeTab: 'simple',
+        activeTab: 'catpaw',
         vertical: true,
         tabs: [{
             id: 'simple',
@@ -11,6 +11,9 @@ define(function(require) {
         }, {
             id: 'vertical',
             title: 'Vertical'
+        }, {
+            id: 'catpaw',
+            title: 'Cat Paw'
         }],
         events: {
             initTab: function(id) {

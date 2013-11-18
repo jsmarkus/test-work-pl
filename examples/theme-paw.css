@@ -1,0 +1,84 @@
+.theme-paw.tabs-view {
+    font-family: Arial, Sans;
+    position: relative;
+}
+
+.theme-paw.tabs-view > .tabs {
+    border: none;
+    position: relative;
+}
+
+.theme-paw.tabs-view > .tabs li {
+    border: 1px solid black;
+    border-radius: 40px;
+    position: absolute;
+    background-color: #E5CDCC;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+}
+.theme-paw.tabs-view > .tabs li.active > a {
+    background-color: transparent;
+}
+.theme-paw.tabs-view > .tabs li:hover {
+    background-color: #F9CA88;
+}
+.theme-paw.tabs-view > .tabs li.active {
+    background-color: #F9CA88;
+}
+.theme-paw.tabs-view > .tabs li > a {
+    background-color: transparent;
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 50px;
+}
+
+.theme-paw.tabs-view > .tabs li[data-tab-id="0"] {
+    top: 20px;
+    left: 0px;
+}
+.theme-paw.tabs-view > .tabs li[data-tab-id="1"] {
+    top: 0px;
+    left: 50px;
+}
+.theme-paw.tabs-view > .tabs li[data-tab-id="2"] {
+    top: 0px;
+    left: 105px;
+}
+.theme-paw.tabs-view > .tabs li[data-tab-id="3"] {
+    top: 20px;
+    left: 155px;
+}
+
+
+.theme-paw.tabs-view .panes {
+    border-radius: 50px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+    position: absolute;
+
+    top: 60px;
+    left: 50px;
+}
+
+.theme-paw.tabs-view {
+
+}
+
+.theme-paw.tabs-view {
+
+}
+
+.theme-paw.tabs-view {
+
+}
+
+.theme-paw.tabs-view {
+
+}
+
+.theme-paw.tabs-view {
+
+}
+

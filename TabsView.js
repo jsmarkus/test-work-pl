@@ -34,6 +34,7 @@
      * @typedef {Object} TabsViewOptions
      * @property {HTMLElement} renderTo parent DOM node (used as a container)
      * @property {Boolean} vertical whether tabs are vertical
+     * @property {Boolean} useWheel whether to use mouse whell to navigate. Default is `true`
      * @property {String} activeTab active tab ID
      * @property {Array.<TabOptions>} tabs array of tab definitions
      * @property {TabEvents} events event handlers
@@ -90,8 +91,9 @@
         options = options || {};
         var tabs = options.tabs || [];
         var activeTab = options.activeTab || false;
-        var events = options.events || {};
         var renderTo = options.renderTo || false;
+
+        var useWheel = 'useWheel' in options ? options.useWheel : true;
 
         var events = options.events || {};
         var initTab = 'function' === typeof events.initTab ? events.initTab : false;
@@ -106,7 +108,10 @@
             this.activeTab(activeTab);
         }
 
-        this._vertical = !! options.vertical;
+        this._vertical = !!options.vertical;
+
+        this._useWheel = !!useWheel;
+
 
         if (initTab) {
             this.__onInitTab = initTab;
@@ -557,20 +562,22 @@
                 return self._onTitleClick(event);
             }
         );
-        addEvent(
-            this.assets.titles,
-            'mousewheel',
-            function(event) {
-                return self._onTitleWheel(event);
-            }
-        );
-        addEvent(
-            this.assets.titles,
-            'DOMMouseScroll',
-            function(event) {
-                return self._onTitleWheel(event);
-            }
-        );
+        if(this._useWheel) {
+            addEvent(
+                this.assets.titles,
+                'mousewheel',
+                function(event) {
+                    return self._onTitleWheel(event);
+                }
+            );
+            addEvent(
+                this.assets.titles,
+                'DOMMouseScroll',
+                function(event) {
+                    return self._onTitleWheel(event);
+                }
+            );
+        }
     };
 
     /**

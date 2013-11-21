@@ -581,7 +581,7 @@
     };
 
     /**
-     * Handles clicking on tab title
+     * Handles mouse scrolling on tab title
      *
      * @memberof TabsView#
      * @access protected
@@ -599,6 +599,14 @@
         this.nextTab();
 
     };
+
+    /**
+     * Handles clicking on tab title
+     *
+     * @memberof TabsView#
+     * @access protected
+     * @param {Event} event
+     */
     TabsView.prototype._onTitleClick = function(event) {
         var target = event.target;
         if (!target) {
